@@ -1,0 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Serif+SC:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+/* 简约典雅主题：纸质米白 + 墨色 + 薰衣草紫点缀，衬线字体为主 */
+@theme {
+  --color-paper: #fdfcf8;
+  --color-ink: #1c1a17;
+  --color-ink-soft: #57534e;
+  --color-ink-faint: #a89fc0;
+  --color-accent: #5f4b8b;
+  --color-accent-soft: #8674ad;
+  --color-line: #e6e2ef;
+  --color-surface: #f3f0fa;
+  --color-surface-deep: #eae5f5;
+  --font-serif: "EB Garamond", "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-sans: "Helvetica Neue", "PingFang SC", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 细滚动条，低调不抢戏 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cfc8e0;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b3a8cf;
+}
+
+/* 淡入动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out both;
+}
