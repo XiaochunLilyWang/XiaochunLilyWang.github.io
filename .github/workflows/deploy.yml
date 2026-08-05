@@ -23,6 +23,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
+      - run: npm config set registry https://registry.npmmirror.com
       - run: npm ci
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
