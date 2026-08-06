@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import type { ReactNode } from "react"
-import { content, type Lang } from "../data/profile"
+import { content, type Lang } from "../data/profile.tsx"
 
 interface LanguageContextValue {
   lang: Lang

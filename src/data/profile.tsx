@@ -83,7 +83,15 @@ const zh = {
     label: "About",
     heading: "关于我",
     paragraphs: [
-      "我是清华大学新闻传播学院数据传播专业的一名硕士研究生，同时在修读南加州大学传播数据科学双学位，本科毕业于复旦大学新闻学院新闻学专业。",
+      <>
+        我是
+        <a href="https://www.tsjc.tsinghua.edu.cn/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">清华大学新闻传播学院</a>
+        数据传播专业的一名硕士研究生，同时在修读
+        <a href="https://annenberg.usc.edu/academics/communication-data-science-ms/dual-degree-tsinghua-university-school-journalism-and" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">南加州大学传播数据科学</a>
+        双学位，本科毕业于
+        <a href="https://xwxy.fudan.edu.cn/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">复旦大学新闻学院</a>
+        新闻学专业。
+      </>,
       "是一个经历极其不垂直的P人，足迹横跨传统媒体、商业杂志、互联网用研和产品。我的学术和职业兴趣围绕技术对人类认知/情感的影响和人机关系的未来展开。比如，近期我最喜欢的两个研究计划作业，关注的现象分别是AI应用关停后的用户情感（#keep4o）和小红书上的文科生vibe coding博主。",
     ],
   },
@@ -233,7 +241,15 @@ const en: typeof zh = {
     label: "",
     heading: "About Me",
     paragraphs: [
-      "I am a master's student in Data Communication at Tsinghua University's School of Journalism and Communication, concurrently pursuing a second degree in Communication Data Science at USC, with a B.A. in Journalism from Fudan University.",
+      <>
+        I am a master's student in Data Communication at{" "}
+        <a href="https://www.tsjc.tsinghua.edu.cn/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Tsinghua University's School of Journalism and Communication</a>
+        {", concurrently pursuing a second degree in "}
+        <a href="https://annenberg.usc.edu/academics/communication-data-science-ms/dual-degree-tsinghua-university-school-journalism-and" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Communication Data Science at USC</a>
+        {", with a B.A. in Journalism from "}
+        <a href="https://xwxy.fudan.edu.cn/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Fudan University</a>
+        .
+      </>,
       "I'm an INTP whose path has been anything but linear — my footprints stretch across traditional media, business magazines, internet user research, and product management. My academic and professional interests center on how technology shapes human cognition and emotion, and the future of human-machine relationships. For instance, two of my favorite recent research projects looked at user emotions after AI apps shut down (#keep4o) and the liberal-arts vibe-coding bloggers on Xiaohongshu.",
     ],
   },
