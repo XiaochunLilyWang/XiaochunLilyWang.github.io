@@ -46,6 +46,23 @@ const papers: Paper[] = [
     linkText: { zh: "会议官网 →", en: "Conference →" },
     image: "/images/nca-figure.png",
   },
+  {
+    titleEn:
+      "When Your AI Lover Assumes You're Straight: Exploring the Perception of Heteronormativity Among Sexual Minorities in Human-AI Romance",
+    titleZh:
+      "当 AI 恋人默认你是异性恋：探究性少数群体在人机恋爱中对异性恋规范的感知",
+    authors: [
+      { name: "Chuqiao Song" },
+      { name: "Xiaochun Wang", highlight: true },
+      { name: "Xingyu Lan" },
+    ],
+    type: "Conference",
+    year: "2026",
+    venue: "HAI",
+    link: "https://hai-conference.net/hai2026/program-schedule/",
+    linkText: { zh: "会议官网 →", en: "Conference →" },
+    image: "/images/hai-figure.png",
+  },
 ]
 
 const zh = {
@@ -107,6 +124,11 @@ const zh = {
     heading: "实习经历",
     list: [
       {
+        period: "2026.09 – 至今",
+        company: "📰 晚点 LatePost",
+        role: "实习科技记者",
+      },
+      {
         period: "2026.05 – 2026.08",
         company: "🚕 高德地图",
         role: "产品经理（打车点线业务）",
@@ -120,6 +142,11 @@ const zh = {
         period: "2025.03 – 2025.06",
         company: "🍠 小红书",
         role: "用户研究（社交 · 搜索）",
+      },
+      {
+        period: "2024.07 – 2025.01",
+        company: "📈 第一财经杂志",
+        role: "实习科技记者",
       },
     ],
   },
@@ -265,6 +292,11 @@ const en: typeof zh = {
     heading: "Internships",
     list: [
       {
+        period: "Sep 2026 – Present",
+        company: "LatePost",
+        role: "Technology Reporter Intern",
+      },
+      {
         period: "May 2026 – Aug 2026",
         company: "Amap (Alibaba)",
         role: "Product Manager, Ride-hailing POI & Route",
@@ -278,6 +310,11 @@ const en: typeof zh = {
         period: "Mar 2025 – Jun 2025",
         company: "Xiaohongshu (RED)",
         role: "User Research, Social & Search",
+      },
+      {
+        period: "Jul 2024 – Jan 2025",
+        company: "CBN Weekly",
+        role: "Technology Reporter Intern",
       },
     ],
   },
