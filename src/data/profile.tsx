@@ -341,7 +341,7 @@ const en: typeof zh = {
         source: "CBN Weekly",
         description:
           "Contributed desk research and interviews. A story about how users of Minimax's AI companion app Xingye meet and fall in love with the AI characters they create.",
-        link: "https://mp.weixin.qq.com/s/L8oUMwBht7GScn6z43ItWA",
+        link: "https://mp.weixin.qq.com/s/L8oUMwBht7GScn6z43ItVA",
         image: "/images/xingye-users.png",
         imagePosition: "center",
       },
