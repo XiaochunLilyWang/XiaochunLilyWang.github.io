@@ -148,6 +148,11 @@ const zh = {
         company: "📈 第一财经杂志",
         role: "实习科技记者",
       },
+      {
+        period: "2023.07 – 2023.08",
+        company: "🗞️ 新华社上海分社",
+        role: "经济部实习记者",
+      },
     ],
   },
   content: {
@@ -315,6 +320,11 @@ const en: typeof zh = {
         period: "Jul 2024 – Jan 2025",
         company: "CBN Weekly",
         role: "Technology Reporter Intern",
+      },
+      {
+        period: "Jul 2023 – Aug 2023",
+        company: "Xinhua News Agency, Shanghai Bureau",
+        role: "Economic News Reporter Intern",
       },
     ],
   },
