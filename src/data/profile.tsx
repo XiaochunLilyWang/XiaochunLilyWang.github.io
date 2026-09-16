@@ -158,10 +158,39 @@ const zh = {
   content: {
     label: "Portfolio",
     heading: "内容生产",
-    intro:
-      "曾任《第一财经杂志》科技栏目实习记者、复旦大学校级学生媒体《复旦人周报》主编，热爱观察技术、商业与青年文化。以下是部分媒体作品。",
     imageNote: "封面",
     linkText: "阅读全文 →",
+    scrollHint: "← 左右滑动查看更多 →",
+    mediaHeading: "媒体作品",
+    intro:
+      "曾任《第一财经杂志》科技栏目实习记者、复旦大学校级学生媒体《复旦人周报》主编，热爱观察技术、商业与青年文化。以下是部分媒体作品。",
+    vibeCoding: {
+      heading: "Vibe Coding 作品",
+      intro:
+        "文科生也想亲手造点东西。以下是我用自然语言和 AI 一起写出来的互动作品，都可以直接在浏览器里打开玩。",
+      playText: "去玩 →",
+      repoText: "代码仓库 →",
+      list: [
+        {
+          title: "云门矿难沉默录",
+          source: "叙事游戏",
+          description:
+            "一款调查报道题材的叙事游戏。玩家扮演周刊记者，从一封匿名邮件出发，核对十四个名字，还原一座习惯沉默的矿山。",
+          playLink: "https://xiaochunlilywang.github.io/yunmen-game-web/",
+          repoLink: "https://github.com/XiaochunLilyWang/yunmen-game",
+          image: "/images/vibe-yunmen.png",
+        },
+        {
+          title: "BOXED",
+          source: "音乐节奏游戏",
+          description:
+            "双手追光，把节拍打进盒子。两颗球、两只手、一首歌，追上每一次撞墙，把节拍打成一场几何表演。",
+          playLink: "https://xiaochunlilywang.github.io/boxed-rhythm-game/",
+          repoLink: "https://github.com/XiaochunLilyWang/boxed-rhythm-game",
+          image: "/images/vibe-boxed.png",
+        },
+      ],
+    },
     list: [
       {
         title: "揭穿 AI 脸",
@@ -198,6 +227,24 @@ const zh = {
           "担任《复旦人周报》主编后策划的第一个选题，彼时 DeepSeek 方兴未艾，我们记录了大学生对人机协作的初探。",
         link: "https://mp.weixin.qq.com/s/gnoRcCRh9YvtIjfeqUqERA",
         image: "/images/fudanren-ai.png",
+      },
+      {
+        title: "银行员工在线“求业绩” 社交、电商平台现灰色产业链",
+        period: "2023.09",
+        source: "经济参考报",
+        description:
+          "独立主笔，调查社交与电商平台上悄然成形的银行揽储灰色产业链——资金掮客以网络为阵地在银行与储户间游走，有的银行员工则网购业绩。",
+        link: "https://mp.weixin.qq.com/s/Rk8Ks8K1CBVZ2VPzPNFI8A",
+        image: "/images/bank-grey-chain.png",
+      },
+      {
+        title: "为什么是折叠屏？",
+        period: "2026.09",
+        source: "第一财经杂志",
+        description:
+          "参与主笔，72 小时内华为、小米、苹果接连发布折叠旗舰。我们试图回答：为什么手机厂商不约而同把折叠屏放到了 AI 时代的旗舰位置。",
+        link: "https://mp.weixin.qq.com/s/-fGdHtHCir0PJ-miw9Ox0w",
+        image: "/images/why-foldables.png",
       },
     ],
   },
@@ -331,10 +378,39 @@ const en: typeof zh = {
   content: {
     label: "",
     heading: "Portfolio",
-    intro:
-      "Formerly a journalist intern at CBN Weekly and editor-in-chief of Fudan Weekly, I keep writing about technology, business, consumption and youth culture. Selected works below.",
     imageNote: "Cover",
     linkText: "Read →",
+    scrollHint: "← swipe for more →",
+    mediaHeading: "Media Work",
+    intro:
+      "Formerly a journalist intern at CBN Weekly and editor-in-chief of Fudan Weekly, I keep writing about technology, business, consumption and youth culture. Selected works below.",
+    vibeCoding: {
+      heading: "Vibe Coding",
+      intro:
+        "A humanities student who still wants to build things. These interactive pieces were written with AI in plain language — all playable right in the browser.",
+      playText: "Play →",
+      repoText: "Repository →",
+      list: [
+        {
+          title: "The Yunmen Silence",
+          source: "Narrative Game",
+          description:
+            "A narrative game about investigative reporting. You play a weekly magazine journalist who starts from an anonymous email, checks fourteen names, and uncovers a mine that has learned to stay silent.",
+          playLink: "https://xiaochunlilywang.github.io/yunmen-game-web/",
+          repoLink: "https://github.com/XiaochunLilyWang/yunmen-game",
+          image: "/images/vibe-yunmen.png",
+        },
+        {
+          title: "BOXED",
+          source: "Rhythm Game",
+          description:
+            "Chase the light with both hands and box the beat. Two balls, two hands, one song — catch every bounce off the wall and turn the rhythm into a geometric performance.",
+          playLink: "https://xiaochunlilywang.github.io/boxed-rhythm-game/",
+          repoLink: "https://github.com/XiaochunLilyWang/boxed-rhythm-game",
+          image: "/images/vibe-boxed.png",
+        },
+      ],
+    },
     list: [
       {
         title: "Unmasking AI Faces",
@@ -373,6 +449,25 @@ const en: typeof zh = {
           "The first topic I planned as editor-in-chief of Fudan Weekly. DeepSeek was just emerging — we documented how college students first encountered human-AI collaboration.",
         link: "https://mp.weixin.qq.com/s/gnoRcCRh9YvtIjfeqUqERA",
         image: "/images/fudanren-ai.png",
+      },
+      {
+        title:
+          "Bank Staff Shopping for Deposits: A Grey Industry Chain on Social and E-Commerce Platforms",
+        period: "Sep 2023",
+        source: "Economic Information Daily",
+        description:
+          "Sole author. An investigation into the grey chain quietly taking shape on social and e-commerce platforms, where money brokers work the space between banks and depositors while some bank employees shop online to hit their targets.",
+        link: "https://mp.weixin.qq.com/s/Rk8Ks8K1CBVZ2VPzPNFI8A",
+        image: "/images/bank-grey-chain.png",
+      },
+      {
+        title: "Why Foldables?",
+        period: "Sep 2026",
+        source: "CBN Weekly",
+        description:
+          "Co-lead writer. Huawei, Xiaomi and Apple each launched a foldable flagship within 72 hours. We asked why phone makers have all placed the foldable at the center of their AI-era lineups.",
+        link: "https://mp.weixin.qq.com/s/-fGdHtHCir0PJ-miw9Ox0w",
+        image: "/images/why-foldables.png",
       },
     ],
   },

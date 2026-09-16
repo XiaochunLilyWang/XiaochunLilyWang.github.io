@@ -33,6 +33,7 @@ body {
 /* 细滚动条，低调不抢戏 */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
