@@ -193,6 +193,15 @@ const zh = {
     },
     list: [
       {
+        title: "为什么是折叠屏？",
+        period: "2026.09",
+        source: "第一财经杂志",
+        description:
+          "参与主笔，72 小时内华为、小米、苹果接连发布折叠旗舰。我们试图回答：为什么手机厂商不约而同把折叠屏放到了 AI 时代的旗舰位置。",
+        link: "https://mp.weixin.qq.com/s/-fGdHtHCir0PJ-miw9Ox0w",
+        image: "/images/why-foldables.png",
+      },
+      {
         title: "揭穿 AI 脸",
         period: "2024.11",
         source: "第一财经杂志",
@@ -236,15 +245,6 @@ const zh = {
           "独立主笔，调查社交与电商平台上悄然成形的银行揽储灰色产业链——资金掮客以网络为阵地在银行与储户间游走，有的银行员工则网购业绩。",
         link: "https://mp.weixin.qq.com/s/Rk8Ks8K1CBVZ2VPzPNFI8A",
         image: "/images/bank-grey-chain.png",
-      },
-      {
-        title: "为什么是折叠屏？",
-        period: "2026.09",
-        source: "第一财经杂志",
-        description:
-          "参与主笔，72 小时内华为、小米、苹果接连发布折叠旗舰。我们试图回答：为什么手机厂商不约而同把折叠屏放到了 AI 时代的旗舰位置。",
-        link: "https://mp.weixin.qq.com/s/-fGdHtHCir0PJ-miw9Ox0w",
-        image: "/images/why-foldables.png",
       },
     ],
   },
@@ -413,6 +413,15 @@ const en: typeof zh = {
     },
     list: [
       {
+        title: "Why Foldables?",
+        period: "Sep 2026",
+        source: "CBN Weekly",
+        description:
+          "Co-lead writer. Huawei, Xiaomi and Apple each launched a foldable flagship within 72 hours. We asked why phone makers have all placed the foldable at the center of their AI-era lineups.",
+        link: "https://mp.weixin.qq.com/s/-fGdHtHCir0PJ-miw9Ox0w",
+        image: "/images/why-foldables.png",
+      },
+      {
         title: "Unmasking AI Faces",
         period: "Nov 2024",
         source: "CBN Weekly",
@@ -459,15 +468,6 @@ const en: typeof zh = {
           "Sole author. An investigation into the grey chain quietly taking shape on social and e-commerce platforms, where money brokers work the space between banks and depositors while some bank employees shop online to hit their targets.",
         link: "https://mp.weixin.qq.com/s/Rk8Ks8K1CBVZ2VPzPNFI8A",
         image: "/images/bank-grey-chain.png",
-      },
-      {
-        title: "Why Foldables?",
-        period: "Sep 2026",
-        source: "CBN Weekly",
-        description:
-          "Co-lead writer. Huawei, Xiaomi and Apple each launched a foldable flagship within 72 hours. We asked why phone makers have all placed the foldable at the center of their AI-era lineups.",
-        link: "https://mp.weixin.qq.com/s/-fGdHtHCir0PJ-miw9Ox0w",
-        image: "/images/why-foldables.png",
       },
     ],
   },
