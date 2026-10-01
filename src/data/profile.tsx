@@ -102,14 +102,24 @@ const zh = {
     paragraphs: [
       <>
         我是
-        <a href="https://www.tsjc.tsinghua.edu.cn/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">清华大学新闻传播学院</a>
-        数据传播专业的一名硕士研究生，同时在修读
-        <a href="https://annenberg.usc.edu/academics/communication-data-science-ms/dual-degree-tsinghua-university-school-journalism-and" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">南加州大学传播数据科学</a>
-        双学位，本科毕业于
+        <a href="https://www.tsjc.tsinghua.edu.cn/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">清华大学新闻与传播学院</a>
+        数据传播专业的硕士研究生，师从
+        <a href="https://www.tsjc.tsinghua.edu.cn/en/info/1029/1355.htm" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">蒋俏蕾教授</a>
+        。同时，我通过
+        <a href="https://annenberg.usc.edu/academics/communication-data-science-ms/dual-degree-tsinghua-university-school-journalism-and" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">清华—南加州大学双学位项目</a>
+        攻读南加州大学（USC）传播数据科学理学硕士学位。我本科毕业于
         <a href="https://xwxy.fudan.edu.cn/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">复旦大学新闻学院</a>
-        新闻学专业。
+        新闻学专业，受
+        <a href="https://olivialan.github.io" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">蓝星宇副教授</a>
+        指导。
       </>,
-      "是一个经历极其不垂直的P人，足迹横跨传统媒体、商业杂志、互联网用研和产品。我的学术和职业兴趣围绕技术对人类认知/情感的影响和人机关系的未来展开。比如，近期我最喜欢的两个研究计划作业，关注的现象分别是AI应用关停后的用户情感（#keep4o）和小红书上的文科生vibe coding博主。",
+      <>
+        我的学术与职业经历横跨科技媒体、用户研究与产品管理。总体而言，我关注新兴技术如何塑造人的认知、情感与社会互动，并特别关注
+        <strong className="font-semibold text-ink">人与 AI 的关系</strong>
+        ，以及
+        <strong className="font-semibold text-ink">AI 在日常生活中不断演变的角色</strong>
+        。
+      </>,
     ],
   },
   academic: {
@@ -192,6 +202,15 @@ const zh = {
       ],
     },
     list: [
+      {
+        title: "晚点 AI 季报：Muse 引爆个人助理，Astra 走进机器人，OpenAI 收入猛增",
+        period: "2026.09",
+        source: "晚点 LatePost",
+        description:
+          "参与撰稿，《晚点聊》26 年 Q3 的 AI 季报。沿「推进智能前沿」与「智能的扩散」两条脉络，从 GPT-6 Astra 与 Claude Opus 5.5 的模型竞赛，讲到 Muse 引爆的个人 AI 助理热潮。",
+        link: "https://mp.weixin.qq.com/s/lS0m51NO_R34RPU9Af1Emg",
+        image: "/images/latepost-ai-q3.png",
+      },
       {
         title: "为什么是折叠屏？",
         period: "2026.09",
@@ -323,13 +342,23 @@ const en: typeof zh = {
       <>
         I am a master's student in Data Communication at{" "}
         <a href="https://www.tsjc.tsinghua.edu.cn/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Tsinghua University's School of Journalism and Communication</a>
-        {", concurrently pursuing a second degree in "}
-        <a href="https://annenberg.usc.edu/academics/communication-data-science-ms/dual-degree-tsinghua-university-school-journalism-and" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Communication Data Science at USC</a>
-        {", with a B.A. in Journalism from "}
+        {", where I work under the supervision of "}
+        <a href="https://www.tsjc.tsinghua.edu.cn/en/info/1029/1355.htm" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Prof. Qiaolei Jiang</a>
+        {". I am concurrently pursuing an M.S. in Communication Data Science at the University of Southern California (USC) through the "}
+        <a href="https://annenberg.usc.edu/academics/communication-data-science-ms/dual-degree-tsinghua-university-school-journalism-and" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Tsinghua–USC dual-degree program</a>
+        {". I received my B.A. in Journalism from "}
         <a href="https://xwxy.fudan.edu.cn/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Fudan University</a>
+        {", where I was advised by "}
+        <a href="https://olivialan.github.io" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Prof. Xingyu Lan</a>
         .
       </>,
-      "I'm an INTP whose path has been anything but linear — my footprints stretch across traditional media, business magazines, internet user research, and product management. My academic and professional interests center on how technology shapes human cognition and emotion, and the future of human-machine relationships. For instance, two of my favorite recent research projects looked at user emotions after AI apps shut down (#keep4o) and the liberal-arts vibe-coding bloggers on Xiaohongshu.",
+      <>
+        {"My academic and professional experiences span tech media, user research, and product management. Broadly, I am interested in how emerging technologies shape human cognition, emotion, and social interaction, with a particular focus on "}
+        <strong className="font-semibold text-ink">human–AI relationships</strong>
+        {" and the "}
+        <strong className="font-semibold text-ink">evolving role of AI in everyday life</strong>
+        .
+      </>,
     ],
   },
   academic: {
@@ -412,6 +441,16 @@ const en: typeof zh = {
       ],
     },
     list: [
+      {
+        title:
+          "LatePost AI Quarterly: Muse Ignites Personal Assistants, Astra Moves into Robotics, OpenAI's Revenue Surges",
+        period: "Sep 2026",
+        source: "LatePost",
+        description:
+          "Contributing writer. LatePost's Q3 2026 AI quarterly review, organized around advancing the intelligence frontier and the diffusion of intelligence — from the model race between GPT-6 Astra and Claude Opus 5.5 to the wave of personal AI assistants set off by Muse.",
+        link: "https://mp.weixin.qq.com/s/lS0m51NO_R34RPU9Af1Emg",
+        image: "/images/latepost-ai-q3.png",
+      },
       {
         title: "Why Foldables?",
         period: "Sep 2026",
