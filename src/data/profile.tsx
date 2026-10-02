@@ -82,7 +82,6 @@ const zh = {
   profile: {
     name: "王小淳",
     altName: "Xiaochun (Lily) Wang",
-    title: "And In that light, I will find deliverance.",
     tagline:
       "清华大学数据传播硕士在读。游走于产品、研究与写作之间，相信好的产品始于对人的理解。",
     email: "wangxc25@mails.tsinghua.edu.cn",
@@ -280,11 +279,11 @@ const zh = {
       items: [
         {
           name: "书法",
-          desc: "小时候临摹过 10 遍以上《兰亭序》，现在在小红书上发 iPad 写的拉丝字（在线接单）。",
+          desc: "小时候临摹过 50 遍以上《兰亭序》，现在在小红书上发 iPad 写的拉丝字（在线接单）。",
         },
         {
           name: "Arcaea",
-          desc: "断断续续地玩了 4 年，但是 ptt 一直没有达到 12。这个主页里我名字下方的第一句话来源于游戏中我最喜欢的曲子 Aegleseeker，歌名的意思是追光的人。",
+          desc: "断断续续玩了 4 年，ptt 终于达到了 12。我认为它是世界上的音游中最符合我视觉和听觉审美的，《Aegleseeker》则是其中最符合我审美的曲子。",
         },
         {
           name: "音乐",
@@ -321,7 +320,6 @@ const en: typeof zh = {
   profile: {
     name: "Xiaochun (Lily) Wang",
     altName: "王小淳",
-    title: "And In that light, I will find deliverance.",
     tagline:
       "Master's student in Data Communication at Tsinghua University, moving between product, research, and writing. I believe good products begin with understanding people.",
     email: "wangxc25@mails.tsinghua.edu.cn",
@@ -523,11 +521,11 @@ const en: typeof zh = {
       items: [
         {
           name: "Calligraphy",
-          desc: "I copied the Lantingji Xu (Preface to the Poems Collected from the Orchid Pavilion) more than 10 times as a kid. Now I post iPad-drawn brushed type on RED (taking commissions online).",
+          desc: "I copied the Lantingji Xu (Preface to the Poems Collected from the Orchid Pavilion) more than 50 times as a kid. Now I post iPad-drawn brushed type on RED (taking commissions online).",
         },
         {
           name: "Arcaea",
-          desc: "I've been playing on and off for 4 years, but my ptt still hasn't reached 12. The first line under my name on this homepage comes from my favorite track in the game, Aegleseeker — the name means 'one who seeks the light.'",
+          desc: "After playing on and off for 4 years, my ptt has finally reached 12. To me it is the rhythm game that best matches my visual and auditory taste, and Aegleseeker is the track within it that matches mine most of all.",
         },
         {
           name: "Music",

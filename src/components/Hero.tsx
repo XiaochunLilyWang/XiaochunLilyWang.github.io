@@ -22,19 +22,9 @@ export default function Hero() {
             </span>
           </h1>
 
-          {/* 职位标签 */}
-          <div
-            className="flex items-center gap-4 mb-8 animate-fade-in-up"
-            style={{ animationDelay: "0.3s" }}
-          >
-            <span className="text-accent text-sm tracking-widest">
-              {profile.title}
-            </span>
-          </div>
-
           {/* 关于我 */}
           <div
-            className="space-y-4 animate-fade-in-up"
+            className="space-y-4 mt-8 animate-fade-in-up"
             style={{ animationDelay: "0.4s" }}
           >
             {about.paragraphs.map((p, i) => (
