@@ -113,10 +113,10 @@ const zh = {
         指导。
       </>,
       <>
-        我的学术与职业经历横跨科技媒体、用户研究与产品管理。总体而言，我关注新兴技术如何塑造人的认知、情感与社会互动，并特别关注
+        我的学术与职业经历横跨科技媒体、用户研究与产品管理。总体而言，我关注新兴技术如何塑造人的认知与情感，并特别关注
         <strong className="font-semibold text-ink">人与 AI 的关系</strong>
         ，以及
-        <strong className="font-semibold text-ink">AI 在日常生活中不断演变的角色</strong>
+        <strong className="font-semibold text-ink">AI 对人际关系和社会互动的影响</strong>
         。
       </>,
     ],
@@ -351,10 +351,10 @@ const en: typeof zh = {
         .
       </>,
       <>
-        {"My academic and professional experiences span tech media, user research, and product management. Broadly, I am interested in how emerging technologies shape human cognition, emotion, and social interaction, with a particular focus on "}
+        {"My academic and professional experiences span tech media, user research, and product management. Broadly, I am interested in how emerging technologies shape human cognition and emotion, with a particular focus on "}
         <strong className="font-semibold text-ink">human–AI relationships</strong>
-        {" and the "}
-        <strong className="font-semibold text-ink">evolving role of AI in everyday life</strong>
+        {" and "}
+        <strong className="font-semibold text-ink">how AI shapes interpersonal relationships and social interaction</strong>
         .
       </>,
     ],
