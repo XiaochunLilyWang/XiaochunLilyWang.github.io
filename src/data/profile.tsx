@@ -206,6 +206,15 @@ const zh = {
     },
     list: [
       {
+        title: "Opus 5.5 是如何生成视频的？",
+        period: "2026.10",
+        source: "自媒体作品",
+        description:
+          "交互式图文报道。拆解只能输出文本的 Opus 5.5 如何用代码逐帧「画」出千万播放的视频，又如何当上调度 Midjourney、Suno、Seedance 的「总导演」。",
+        link: "/works/opus55-video/",
+        image: "/images/opus55-video.png",
+      },
+      {
         title: "晚点 AI 季报：Muse 引爆个人助理，Astra 走进机器人，OpenAI 收入猛增",
         period: "2026.09",
         source: "晚点 LatePost",
@@ -447,6 +456,15 @@ const en: typeof zh = {
       ],
     },
     list: [
+      {
+        title: "How Does Opus 5.5 Make Videos?",
+        period: "Oct 2026",
+        source: "Independent Media",
+        description:
+          "An interactive explainer on how a text-only model draws viral videos frame by frame in code — and how it directs Midjourney, Suno and Seedance like a film crew.",
+        link: "/works/opus55-video/",
+        image: "/images/opus55-video.png",
+      },
       {
         title:
           "LatePost AI Quarterly: Muse Ignites Personal Assistants, Astra Moves into Robotics, OpenAI's Revenue Surges",

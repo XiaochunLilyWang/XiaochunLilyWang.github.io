@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Opus 5.5是如何生成视频的？</title>
+<meta name="description" content="只能输出文本的语言模型，如何用一行行代码「画」出千万播放的视频，又如何当上调度Midjourney、Suno、Seedance的「总导演」。">
+<meta property="og:title" content="Opus 5.5是如何生成视频的？">
+<meta property="og:description" content="只能输出文本的模型，如何「画」出一段视频">
+<meta property="og:image" content="img/benchmarks.png">
+<meta name="color-scheme" content="light">
+<style>
+:root{
+  --paper:#F5F1E8; --paper-2:#ECE6D8; --card:#FBF9F4;
+  --ink:#1E1D1A; --ink-2:#4F4B44; --muted:#857F74; --line:#DCD4C4;
+  --clay:#C9643F; --clay-ink:#A84E2D; --clay-soft:#F0D5C7;
+  --neutral-bar:#BDB6A8;
+  --serif:"Songti SC","Noto Serif SC","Source Han Serif SC","STSong","SimSun",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,Consolas,"Roboto Mono",monospace;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.85 var(--sans);letter-spacing:.01em}
+img{max-width:100%;display:block}
+a{color:var(--clay-ink)}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:680px;margin:0 auto;padding:0 20px}
+.wide{max-width:960px;margin:0 auto;padding:0 20px}
+
+/* progress + nav */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--clay);z-index:30}
+.nav{position:sticky;top:0;z-index:20;background:rgba(245,241,232,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav ul{list-style:none;margin:0 auto;padding:0 12px;max-width:960px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav ul::-webkit-scrollbar{display:none}
+.nav a{display:block;white-space:nowrap;padding:12px 12px;font-size:14px;color:var(--ink-2);text-decoration:none;border-bottom:2px solid transparent}
+.nav a.on{color:var(--ink);border-bottom-color:var(--clay);font-weight:600}
+
+/* hero */
+.hero{padding-top:56px;padding-bottom:8px}
+.kicker{font-size:13px;letter-spacing:.18em;color:var(--clay-ink);font-weight:600;margin:0 0 14px}
+h1{font-family:var(--serif);font-size:clamp(34px,7vw,56px);line-height:1.18;margin:0 0 26px;font-weight:900;letter-spacing:-.01em}
+h2{font-family:var(--serif);font-size:clamp(25px,5vw,34px);line-height:1.3;margin:0 0 22px;font-weight:900}
+.sec-no{display:block;font:600 13px/1 var(--mono);color:var(--clay-ink);letter-spacing:.12em;margin-bottom:12px}
+p{margin:0 0 1.15em}
+.lead p:first-child{font-size:19px}
+section{padding:56px 0 8px}
+
+/* figures */
+figure{margin:28px 0}
+.gif{border-radius:var(--r);overflow:hidden;background:#111;aspect-ratio:424/240;position:relative}
+.gif img{width:100%;height:100%;object-fit:cover}
+figcaption{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.6}
+
+/* stat row */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0 6px}
+.stats.four{grid-template-columns:repeat(4,1fr)}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 12px}
+.stat b{display:block;font:800 clamp(20px,4.6vw,28px)/1.1 var(--serif);color:var(--ink)}
+.stat b em{font-style:normal;color:var(--clay-ink)}
+.stat>span{display:block;font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4}
+@media (max-width:560px){.stats.four{grid-template-columns:repeat(2,1fr)}}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 20px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 13px;font-size:14px;color:var(--ink-2)}
+.chip i{font-style:normal;color:var(--clay-ink);margin-right:4px}
+
+/* carousel */
+.carousel{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}
+.carousel::-webkit-scrollbar{display:none}
+.carousel .gif{flex:0 0 86%;scroll-snap-align:center}
+@media (min-width:860px){.carousel .gif{flex:1 1 0}}
+.dots{display:flex;justify-content:center;gap:8px;margin-top:10px}
+.dots button{width:8px;height:8px;border-radius:50%;border:0;padding:0;background:var(--line)}
+.dots button.on{background:var(--clay);width:22px;border-radius:4px;transition:width .25s}
+@media (min-width:860px){.dots{display:none}}
+
+/* lab card */
+.lab{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:30px 0 36px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.lab-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.lab-title{font:800 18px/1.4 var(--serif)}
+.tag{font:600 11px/1 var(--mono);letter-spacing:.1em;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:4px 6px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.steps button{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 6px;text-align:left;line-height:1.35;font-size:13px;color:var(--ink-2);transition:background .2s,border-color .2s}
+.steps button b{display:block;font:700 12px/1 var(--mono);color:var(--muted);margin-bottom:5px}
+.steps button.on{background:var(--ink);border-color:var(--ink);color:#F5F1E8}
+.steps button.on b{color:var(--clay-soft)}
+.stage{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--paper)}
+.stage canvas{display:block;width:100%;height:auto}
+.stage .badge{position:absolute;left:10px;top:10px;font:600 11px/1 var(--mono);background:rgba(30,29,26,.82);color:#F5F1E8;padding:5px 7px;border-radius:5px}
+.panel{margin-top:14px;font-size:15px;line-height:1.7}
+.panel[hidden]{display:none}
+.panel .hint{color:var(--muted);font-size:13px;margin:8px 0 0}
+.board{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;background:var(--paper);border:1px dashed var(--line);border-radius:10px;padding:12px 14px}
+.board dt{font:600 12px/1.9 var(--mono);color:var(--muted)}
+.board dd{margin:0}
+pre.code{white-space:normal;margin:0;background:#1E1D1A;color:#E9E3D6;border-radius:10px;padding:12px 0;overflow-x:auto;font:12.5px/1.75 var(--mono)}
+pre.code>span{display:block;padding:0 14px;border-left:3px solid transparent;transition:background .15s,border-color .15s;white-space:pre}
+pre.code .c{color:#8F8A7F}
+pre.code .k{color:#E7A585}
+pre.code>span.hot{background:rgba(201,100,63,.22);border-left-color:var(--clay)}
+.scrub{display:flex;align-items:center;gap:10px;margin:12px 0 6px}
+input[type=range]{flex:1;accent-color:var(--clay);height:28px}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font:12px/1.4 var(--mono);color:var(--ink-2)}
+.readout div{background:var(--paper);border-radius:6px;padding:6px 8px}
+.readout b{color:var(--ink)}
+.btn{border:0;background:var(--clay);color:#fff;border-radius:999px;padding:9px 18px;font-size:14px;font-weight:600}
+.btn.ghost{background:transparent;border:1px solid var(--ink);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.film{display:flex;gap:4px;margin-top:12px;overflow-x:auto;min-height:44px;padding:6px;background:#1E1D1A;border-radius:8px}
+.film canvas{width:72px;height:40.5px;border-radius:3px;flex:0 0 auto;animation:pop .25s ease}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.bar{height:4px;background:var(--line);border-radius:2px;margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--clay)}
+.cmd{font:12.5px/1.6 var(--mono);background:#1E1D1A;color:#E9E3D6;border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:nowrap}
+.cmd::before{content:"$ ";color:var(--clay-soft)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.mono{font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+
+/* compare */
+.versus{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:620px){.versus{grid-template-columns:1fr}}
+.vcol{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--paper)}
+.vcol h4{margin:0 0 8px;font-size:15px}
+.vcol h4 small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.vcol canvas{width:100%;height:auto;border-radius:8px;display:block}
+.vcol ul{margin:10px 0 0;padding:0;list-style:none;font-size:14px;line-height:1.6}
+.vcol li{padding-left:22px;position:relative;margin:5px 0}
+.vcol li::before{position:absolute;left:0;top:0;font-weight:700}
+.vcol li.y::before{content:"✓";color:#3C7A4A}
+.vcol li.n::before{content:"✕";color:var(--clay-ink)}
+.vcol li.d::before{content:"·";color:var(--muted);font-size:20px;line-height:1.1}
+.mini{display:flex;align-items:center;gap:8px;margin-top:8px;font:12px var(--mono);color:var(--muted)}
+
+/* dark section */
+.dark{background:#1E1D1A;color:#ECE6D8;margin-top:56px;padding-bottom:56px}
+.dark h2,.dark .stat b{color:#F5F1E8}
+.dark .sec-no{color:#E7A585}
+.dark .stat{background:#2A2925;border-color:#3A3833}
+.dark .stat b em{color:#E7A585}
+.dark .stat span{color:#A49E92}
+.dark figcaption{color:#A49E92}
+.dark a{color:#E7A585}
+.dark .lab{background:#262520;border-color:#3A3833}
+.dark .tag{border-color:#3A3833;color:#A49E92}
+
+/* crew */
+.crew{display:grid;grid-template-columns:1fr;gap:10px}
+.crew .boss{background:var(--clay);color:#fff;border-radius:12px;padding:14px;text-align:center}
+.crew .boss b{display:block;font:800 18px/1.3 var(--serif)}
+.crew .boss span{font-size:13px;opacity:.9}
+.group-l{font:600 11px/1 var(--mono);letter-spacing:.1em;color:#A49E92;margin:10px 0 2px}
+.nodes{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.node{background:#2F2D28;border:1px solid #45423B;border-radius:10px;padding:10px;text-align:left;color:#ECE6D8;font-size:14px;line-height:1.35;transition:all .2s}
+.node small{display:block;color:#A49E92;font-size:12px;margin-top:3px}
+.node.on{border-color:#E7A585;background:#3A2D25}
+.node.lit{border-color:#E7A585;box-shadow:0 0 0 3px rgba(231,165,133,.25)}
+.detail{margin-top:12px;background:#2A2925;border-left:3px solid #E7A585;border-radius:6px;padding:12px 14px;font-size:14.5px;line-height:1.7;min-height:72px}
+.pipe{display:grid;grid-template-columns:1fr 18px 1fr 18px 1fr 18px 1fr;align-items:center;gap:4px;margin-top:12px}
+.pipe .col{display:flex;flex-direction:column;gap:5px}
+.pipe .pn{background:#2F2D28;border:1px solid #45423B;border-radius:8px;padding:7px 6px;font-size:12px;text-align:center;line-height:1.3;transition:all .3s}
+.pipe .pn.lit{background:#E7A585;color:#1E1D1A;border-color:#E7A585}
+.pipe .pn.dim{opacity:.35}
+.pipe .arr{color:#6C675D;text-align:center;font-size:14px}
+.tl{list-style:none;margin:0;padding:0;position:relative}
+.tl::before{content:"";position:absolute;left:9px;top:8px;bottom:8px;width:2px;background:#45423B}
+.tl li{position:relative;padding:0 0 16px 32px;font-size:15px;line-height:1.6}
+.tl li::before{content:"";position:absolute;left:3px;top:6px;width:14px;height:14px;border-radius:50%;background:#1E1D1A;border:2px solid #A49E92}
+.tl li.me::before{background:#E7A585;border-color:#E7A585}
+.tl li small{display:block;color:#A49E92;font-size:12.5px}
+.legend-s{display:flex;gap:14px;font-size:12px;color:#A49E92;margin:0 0 10px}
+.legend-s i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+
+/* history timeline */
+.hist{display:flex;gap:10px;overflow-x:auto;padding:4px 0 10px;scroll-snap-type:x proximity}
+.hist div{flex:0 0 200px;scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--neutral-bar);border-radius:10px;padding:12px;font-size:14px;line-height:1.55}
+.hist div.hl{border-top-color:var(--clay)}
+.hist b{display:block;font:700 13px/1.4 var(--mono);color:var(--clay-ink);margin-bottom:4px}
+
+/* chart */
+.bench-pick{position:relative;display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none}
+.bench-pick::-webkit-scrollbar{display:none}
+.bench-pick button{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--ink-2)}
+.bench-pick button.on{background:var(--ink);color:#F5F1E8;border-color:var(--ink)}
+.bench-meta{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.bench-meta b{font:800 17px/1.3 var(--serif)}
+.bench-meta span{font-size:12.5px;color:var(--muted)}
+.bars{display:grid;gap:8px}
+.brow{display:grid;grid-template-columns:96px 1fr 62px;align-items:center;gap:10px;font-size:13.5px;position:relative;padding:4px 0}
+.brow .nm{color:var(--ink-2);white-space:nowrap}
+.brow.me .nm{color:var(--ink);font-weight:700}
+.track{height:22px;position:relative;border-bottom:1px solid var(--line)}
+.fill{position:absolute;left:0;top:2px;bottom:2px;width:0;background:var(--neutral-bar);border-radius:0 4px 4px 0;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.brow.me .fill{background:var(--clay)}
+.brow .val{font:600 13px var(--mono);color:var(--ink);text-align:right}
+.brow.na .val{color:var(--muted);font-weight:400}
+.brow:hover .fill{filter:brightness(.92)}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#F5F1E8;font-size:12px;line-height:1.5;padding:7px 10px;border-radius:6px;white-space:nowrap;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;z-index:5}
+.tip.show{opacity:1;transform:none}
+.verdict{margin-top:12px;font-size:14px;color:var(--ink-2)}
+.verdict b{color:var(--clay-ink)}
+details{margin-top:14px;font-size:14px}
+summary{cursor:pointer;color:var(--ink-2)}
+details img{margin-top:10px;border-radius:8px;border:1px solid var(--line)}
+
+/* cost toggle */
+.seg{display:inline-flex;background:var(--paper-2);border-radius:999px;padding:3px;margin-bottom:14px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:7px 16px;font-size:14px;color:var(--ink-2)}
+.seg button.on{background:var(--ink);color:#F5F1E8}
+.cost{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.cost div{background:var(--paper);border-radius:10px;padding:12px;transition:background .3s}
+.cost small{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.cost b{font:800 20px/1.3 var(--serif);display:block;transition:opacity .2s}
+.cost.now div{background:#F6E3D9}
+.quote{margin:16px 0 0;padding:12px 14px;border-left:3px solid var(--clay);background:var(--paper);font-size:14.5px;color:var(--ink-2);border-radius:0 8px 8px 0}
+
+/* end */
+.refs{list-style:none;padding:0;margin:0;font-size:14px}
+.refs li{padding:10px 0;border-bottom:1px solid var(--line);word-break:break-all}
+.refs a{text-decoration:none}
+footer{padding-top:40px;padding-bottom:60px;font-size:12.5px;color:var(--muted);text-align:center}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rv{opacity:1;transform:none;transition:none}
+  .fill{transition:none}
+}
+@media (max-width:480px){
+  body{font-size:16.5px}
+  .steps button{font-size:12px;padding:8px 5px}
+  .lab{padding:14px}
+  .readout{grid-template-columns:repeat(2,1fr)}
+  .brow{grid-template-columns:84px 1fr 54px;gap:8px;font-size:12.5px}
+  .pipe .pn{font-size:11px;padding:6px 3px}
+  pre.code{font-size:11px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero wrap">
+  <p class="kicker">CLAUDE OPUS 5.5 · 视频热潮</p>
+  <h1>Opus 5.5是如何生成视频的？</h1>
+  <div class="lead">
+    <p>9月24日，一位X用户发了一条2分16秒的短片，配文「我的天啊，我让Claude做了一个关于西方文明的视频」。</p>
+    <p>视频用线描风格的动画和踩着音乐节拍弹出的文字组成，讲述了文明从古希腊哲学到现代科技的发展历程。截至10月9日，帖子的浏览量已经达到了1500多万。</p>
+  </div>
+  <figure>
+    <div class="gif"><img src="img/civ.gif" width="424" height="240" alt="用Claude制作的西方文明主题视频片段"></div>
+    <div class="stats">
+      <div class="stat"><b>2<em>分</em>16<em>秒</em></b><span>短片时长</span></div>
+      <div class="stat"><b><span class="count" data-to="1500">0</span><em>万+</em></b><span>浏览量（截至10月9日）</span></div>
+      <div class="stat"><b>9<em>月</em>24<em>日</em></b><span>发布于X</span></div>
+    </div>
+  </figure>
+</header>
+
+<nav class="nav" aria-label="章节">
+  <ul>
+    <li><a href="#s1">代码「画」视频</a></li>
+    <li><a href="#s2">Claude当导演</a></li>
+    <li><a href="#s3">为什么是Opus 5.5</a></li>
+    <li><a href="#refs">参考链接</a></li>
+  </ul>
+</nav>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+  <div class="wrap">
+    <span class="sec-no">01</span>
+    <h2>只能输出文本的模型，如何「画」出一段视频</h2>
+    <p>这个视频是用Anthropic在9月22日发布的Opus 5.5模型创作的。模型发布后的几周内，社交媒体上涌现出大量这样的视频，不少作品的浏览量达到了百万、千万量级。</p>
+    <p>刷屏的视频集中在几个类别——一类是知识讲解动画。它们用手绘、卡通、电影等不同风格，通过各种可视化图像和动效解释一个数学公式、一种自然现象或者一段历史。一类是动效展示片，主要涵盖品牌广告、产品介绍宣传片。还有人制作3D游戏演示视频和歌曲MV。</p>
+    <div class="chips">
+      <span class="chip"><i>●</i>知识讲解动画</span>
+      <span class="chip"><i>●</i>动效展示片</span>
+      <span class="chip"><i>●</i>3D游戏演示</span>
+      <span class="chip"><i>●</i>歌曲MV</span>
+    </div>
+  </div>
+  <figure class="wide rv">
+    <div class="carousel" id="car">
+      <div class="gif"><img src="img/demo-a.gif" width="430" height="240" loading="lazy" alt="Opus 5.5制作的视频片段一"></div>
+      <div class="gif"><img src="img/demo-b.gif" width="430" height="240" loading="lazy" alt="Opus 5.5制作的视频片段二"></div>
+      <div class="gif"><img src="img/demo-c.gif" width="424" height="240" loading="lazy" alt="Opus 5.5制作的视频片段三"></div>
+    </div>
+    <div class="dots" id="dots"><button class="on" aria-label="第1张"></button><button aria-label="第2张"></button><button aria-label="第3张"></button></div>
+  </figure>
+  <div class="wrap">
+    <p>不过，Opus 5.5本身是个语言模型，不能直接生成图片和视频，它是用一行行代码把视频「画」出来的。</p>
+    <p>做一个视频大致需要这些步骤：首先是写分镜，模型决定每个镜头有什么画面、持续多久；接下来，模型为每个镜头写一段代码，常见的是网页技术——包括平面画布Canvas 2D、用坐标和数学描述图形的格式SVG、面向艺术创作的绘图库p5.js、网页3D库Three.js等等；第三步是模型使用后台运行的无头浏览器，把这些代码逐帧渲染成图像；最后，模型用FFmpeg工具把所有图像合成一个视频。</p>
+
+    <!-- LAB: pipeline -->
+    <div class="lab rv" id="lab">
+      <div class="lab-head">
+        <span class="lab-title">动手试试：用代码做一个3秒镜头</span>
+        <span class="tag">交互示意</span>
+      </div>
+      <div class="steps" role="tablist">
+        <button class="on" data-step="1"><b>STEP 1</b>写分镜</button>
+        <button data-step="2"><b>STEP 2</b>写镜头代码</button>
+        <button data-step="3"><b>STEP 3</b>逐帧渲染</button>
+        <button data-step="4"><b>STEP 4</b>FFmpeg合成</button>
+      </div>
+      <div class="stage">
+        <canvas id="cv" width="1280" height="720" aria-label="示意动画画面"></canvas>
+        <span class="badge" id="badge">分镜草图</span>
+      </div>
+
+      <div class="panel" data-panel="1">
+        <dl class="board">
+          <dt>镜头</dt><dd>01 · 时长 3 秒 · 30 帧/秒（共 90 帧）</dd>
+          <dt>0.0s</dt><dd>一条线从左向右画出</dd>
+          <dt>0.3s</dt><dd>橙色圆点沿线滑向右侧</dd>
+          <dt>1.2s</dt><dd>标题踩着节拍弹出</dd>
+          <dt>2.0s</dt><dd>三个关键词依次出现</dd>
+        </dl>
+        <p class="hint">模型先决定：每个镜头有什么画面、持续多久。点上方「STEP 2」继续。</p>
+      </div>
+
+      <div class="panel" data-panel="2" hidden>
+        <pre class="code" id="code"><span class="c">// 镜头 01：0.0s → 3.0s，每秒 30 帧</span>
+<span><span class="k">function</span> draw(t) {      <span class="c">// t = 当前时间（秒）</span></span>
+<span class="c" data-l="a">  // ① 线条在 1.2 秒内从左画到右</span>
+<span data-l="a">  line.length = 560 * ease(t / 1.2);</span>
+<span class="c" data-l="b">  // ② 圆点沿线滑动</span>
+<span data-l="b">  dot.x = 40 + 560 * ease((t - 0.3) / 2);</span>
+<span class="c" data-l="c">  // ③ 第 1.2 秒，标题踩点弹出</span>
+<span data-l="c">  title.visible = t &gt;= 1.2;</span>
+<span class="c" data-l="d">  // ④ 2.0 秒起，每 0.3 秒出一个词</span>
+<span data-l="d">  words.shown = floor((t - 2.0) / 0.3) + 1;</span>
+<span>}</span></pre>
+        <div class="scrub">
+          <span class="mono">t</span>
+          <input type="range" id="t" min="0" max="89" value="36" aria-label="时间">
+          <button class="btn ghost" id="play2" style="padding:6px 14px">▶</button>
+        </div>
+        <div class="readout">
+          <div>t = <b id="r-t">0</b>s</div>
+          <div>帧 <b id="r-f">0</b> / 90</div>
+          <div>line = <b id="r-l">0</b></div>
+          <div>dot.x = <b id="r-x">0</b></div>
+          <div>title = <b id="r-v">false</b></div>
+          <div>words = <b id="r-w">0</b></div>
+        </div>
+        <p class="hint">拖动时间轴：代码只规定「什么东西在什么时候，出现在什么位置」，每一帧的画面都是算出来的。高亮的是当前正在起作用的代码行。</p>
+      </div>
+
+      <div class="panel" data-panel="3" hidden>
+        <div class="row" style="margin-top:0">
+          <button class="btn" id="render">开始逐帧渲染</button>
+          <span class="mono" id="r-file">headless browser · 待命</span>
+        </div>
+        <div class="bar"><i id="r-bar"></i></div>
+        <div class="film" id="film" aria-label="已截取的帧"></div>
+        <p class="hint">无头浏览器在后台运行代码，把 t = 0, 1/30, 2/30 … 每个时刻的画面截成一张图片。</p>
+      </div>
+
+      <div class="panel" data-panel="4" hidden>
+        <div class="cmd">ffmpeg -framerate 30 -i frame_%03d.png -pix_fmt yuv420p shot01.mp4</div>
+        <div class="row">
+          <button class="btn" id="play4">▶ 播放合成结果</button>
+          <span class="mono" id="r-out">90 张图片 → 1 段视频</span>
+        </div>
+        <p class="hint">最后一步，FFmpeg 把所有图片按顺序拼成视频。换一句代码、重新渲染，就能改掉画面里的任何细节。</p>
+      </div>
+    </div>
+
+    <p>简单来说，模型输出了分镜文本和镜头代码，再调用工具做可视化呈现。代码规定「什么东西在什么时候，出现在什么位置」，写出某个物体的位置如何随时间变化，就能把画面算出来。</p>
+    <p>X上许多创作者称，输入一段Prompt后，Opus 5.5能够一次性完成上述所有的任务。</p>
+    <p>Seedance、可灵、Sora、Veo这些视频模型的原理，是用海量视频训练，学会了画面「应该长什么样」，生成时从一团随机噪点出发，一步步还原出每一帧的像素，这个过程叫扩散。而Opus 5.5做出的视频，画面里的元素都是代码写定的。</p>
+
+    <!-- LAB: compare -->
+    <div class="lab rv">
+      <div class="lab-head">
+        <span class="lab-title">两种原理，对比看</span>
+        <span class="tag">交互示意</span>
+      </div>
+      <div class="versus">
+        <div class="vcol">
+          <h4>扩散生成<small>Seedance、可灵、Sora、Veo</small></h4>
+          <canvas id="cvN" width="480" height="270" aria-label="扩散去噪示意"></canvas>
+          <div class="mini"><span>噪点</span><input type="range" id="noise" min="0" max="50" value="22" aria-label="去噪步数"><span>画面</span></div>
+          <div class="mini" style="justify-content:space-between"><span id="nStep">去噪 22 / 50 步</span><button class="btn ghost" id="denoise" style="padding:4px 12px;font-size:12px">▶ 自动去噪</button></div>
+          <ul>
+            <li class="d">用海量视频训练，学会画面「应该长什么样」</li>
+            <li class="d">从随机噪点出发，一步步还原每一帧的像素</li>
+          </ul>
+        </div>
+        <div class="vcol">
+          <h4>代码渲染<small>Opus 5.5</small></h4>
+          <canvas id="cvC" width="480" height="270" aria-label="代码渲染示意"></canvas>
+          <div class="mini">画面元素由代码写定，每一帧直接算出</div>
+          <ul>
+            <li class="y">稳定性高</li>
+            <li class="y">不会出现错字和乱码</li>
+            <li class="y">局部修改只需改一行代码，重新渲染</li>
+            <li class="n">难以画出真人和自然光影的细节</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <p>原理不同，产物也各有优劣。代码做的视频最大优势是稳定性高。画面里不会出现错字和乱码，局部修改时，也只需改一行代码重新渲染。不过，代码难以画出真人和自然光影的细节，近期刷屏的作品，几乎都是扁平图形、线描和文字动画。</p>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2" class="dark">
+  <div class="wrap">
+    <span class="sec-no">02</span>
+    <h2>Claude还能当「导演」，调用其他AIGC工具分工创作</h2>
+    <p>除了用代码「画」视频，Opus 5.5在这波视频热潮中还展现出了更复杂的能力。</p>
+    <p>一位X用户制作了一支5分钟的歌曲MV，设定是一场「科技时装秀」。画面中，一位画风写实的女主角走过T台，她的每一套造型和音乐的每一句歌词，都对应一个技术热点和硅谷流行梗。这条帖子浏览量有1980万，被马斯克转发。</p>
+    <figure class="rv">
+      <div class="gif"><img src="img/mv.gif" width="424" height="240" loading="lazy" alt="「科技时装秀」歌曲MV片段"></div>
+      <div class="stats four">
+        <div class="stat"><b>5<em>分钟</em></b><span>MV时长</span></div>
+        <div class="stat"><b><span class="count" data-to="1980">0</span><em>万</em></b><span>浏览量</span></div>
+        <div class="stat"><b>19<em>小时</em></b><span>制作耗时</span></div>
+        <div class="stat"><b>≈50<em>条</em></b><span>作者发送的消息</span></div>
+      </div>
+    </figure>
+    <p>根据作者分享的制作过程，这段视频制作耗时19个小时，其中绝大多数时间是Claude Opus 5.5在「统筹」Midjourney、Seedance 2.5和Suno工作——Midjourney生成静态画面，Suno生成歌曲，Seedance 2.5生成让人物对口型的视频。Claude智能体通过作者已登录的浏览器自己打开这些AI工具、自己写提示词完成操作。音乐和画面做好之后，Claude再通过代码逐帧叠加歌词字幕和图形动画。</p>
+    <p>Claude内部有多个并行的「子智能体」。在写歌词的过程中，一批智能体先去搜集硅谷正在流传的热梗和科技新闻，接着多个「作词人」智能体写了几版歌词，由「评委」智能体择优汇总。在写分镜、做动效的过程中，多个智能体分别充当「导演」「动画师」和「美术指导」，各有分工。</p>
+
+    <!-- LAB: crew -->
+    <div class="lab rv">
+      <div class="lab-head">
+        <span class="lab-title">这个「剧组」怎么分工？</span>
+        <span class="tag">点击查看</span>
+      </div>
+      <div class="crew">
+        <div class="boss"><b>Claude Opus 5.5</b><span>总导演 · 调度外部工具与子智能体</span></div>
+        <div class="group-l">外部 AI 工具（通过作者已登录的浏览器操作）</div>
+        <div class="nodes" id="tools">
+          <button class="node" data-d="Midjourney 负责生成静态画面。Claude 自己打开工具、自己写提示词完成操作。">Midjourney<small>静态画面</small></button>
+          <button class="node" data-d="Suno 负责生成歌曲。">Suno<small>歌曲</small></button>
+          <button class="node" data-d="Seedance 2.5 负责生成让人物对口型的视频。">Seedance 2.5<small>对口型视频</small></button>
+          <button class="node" data-d="音乐和画面做好之后，Claude 再通过代码逐帧叠加歌词字幕和图形动画。">代码<small>字幕与图形动画</small></button>
+        </div>
+        <div class="group-l">并行的子智能体</div>
+        <div class="nodes" id="agents">
+          <button class="node" data-d="写歌词时，一批智能体先去搜集硅谷正在流传的热梗和科技新闻。">搜集员<small>热梗与科技新闻</small></button>
+          <button class="node" data-d="多个「作词人」智能体写了几版歌词。">作词人 ×N<small>写出多版歌词</small></button>
+          <button class="node" data-d="由「评委」智能体对几版歌词择优汇总。">评委<small>择优汇总</small></button>
+          <button class="node" data-d="在写分镜、做动效的过程中，多个智能体分别充当「导演」「动画师」和「美术指导」，各有分工。">导演<small>分镜</small></button>
+          <button class="node" data-d="在写分镜、做动效的过程中，多个智能体分别充当「导演」「动画师」和「美术指导」，各有分工。">动画师<small>动效</small></button>
+          <button class="node" data-d="在写分镜、做动效的过程中，多个智能体分别充当「导演」「动画师」和「美术指导」，各有分工。">美术指导<small>视觉风格</small></button>
+        </div>
+        <div class="detail" id="detail">点击上面任意一个角色，看看它在这支MV里负责什么。</div>
+      </div>
+
+      <div class="lab-head" style="margin-top:22px">
+        <span class="lab-title" style="font-size:16px">歌词是怎么写出来的</span>
+        <button class="btn" id="pipeBtn" style="padding:6px 14px;font-size:13px">▶ 播放流程</button>
+      </div>
+      <div class="pipe" id="pipe">
+        <div class="col"><div class="pn" data-s="1">搜集热梗</div><div class="pn" data-s="1">搜集新闻</div></div>
+        <div class="arr">→</div>
+        <div class="col"><div class="pn" data-s="2">作词人 A</div><div class="pn" data-s="2" data-lose>作词人 B</div><div class="pn" data-s="2" data-lose>作词人 C</div></div>
+        <div class="arr">→</div>
+        <div class="col"><div class="pn" data-s="3">评委<br>择优汇总</div></div>
+        <div class="arr">→</div>
+        <div class="col"><div class="pn" data-s="4">歌词定稿</div></div>
+      </div>
+    </div>
+
+    <p>作者在开工后的头两个小时向Claude交代了自己手上的第三方AI工具清单，讨论了歌曲和视频的整体风格，然后在prompt中写到，「剩下的你自己做，直到它成为一支了不起的MV，做完之前别停。」之后，作者只在主角形象确认、视频色调调整、分镜审核等几个节点介入，总共发送了约50条消息。</p>
+
+    <div class="lab rv">
+      <div class="lab-head">
+        <span class="lab-title">作者只在这几个节点出手</span>
+        <span class="tag">19 小时 · 约 50 条消息</span>
+      </div>
+      <div class="legend-s"><span><i style="background:#E7A585"></i>作者介入</span><span><i style="background:#1E1D1A;border:2px solid #A49E92"></i>Claude 自主工作</span></div>
+      <ol class="tl">
+        <li class="me">交代第三方AI工具清单，讨论歌曲和视频的整体风格<small>开工后的头两个小时</small></li>
+        <li class="me">「剩下的你自己做，直到它成为一支了不起的MV，做完之前别停。」<small>写进 prompt 的一句话</small></li>
+        <li>Claude 调度工具与子智能体，持续工作<small>绝大多数时间</small></li>
+        <li class="me">主角形象确认</li>
+        <li class="me">视频色调调整</li>
+        <li class="me">分镜审核</li>
+        <li>MV 完成<small>总计约 19 小时</small></li>
+      </ol>
+    </div>
+
+    <p>在这样的视频里，Opus 5.5的角色类似一个剧组的总导演，展现出的是调度能力：调度外部工具，也调度几十个分工协作的子智能体，连续工作十几个小时，把它们的产出组装成一支MV。</p>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+  <div class="wrap">
+    <span class="sec-no">03</span>
+    <h2>为什么是Opus 5.5？</h2>
+    <p>用语言模型写代码、做视频，并不是Opus 5.5发布后才出现的事。</p>
+    <p>2021年，基于React的开源编程式视频创作框架Remotion发布；2026年1月，Remotion的开发者推出了Agent Skills插件，允许创作者在AI工具中用自然语言创作视频。Remotion的案例库中已经有使用Opus 4.5制作的动画视频。</p>
+  </div>
+  <div class="wide rv">
+    <div class="hist">
+      <div><b>2021</b>开源编程式视频创作框架 Remotion 发布（基于React）</div>
+      <div><b>2026.01</b>Remotion 推出 Agent Skills 插件，可在AI工具中用自然语言创作视频</div>
+      <div class="hl"><b>2026.09.22</b>Anthropic 发布 Opus 5.5</div>
+      <div class="hl"><b>2026.09.24</b>「西方文明」短片发布，截至10月9日浏览量1500多万</div>
+    </div>
+  </div>
+  <div class="wrap">
+    <p>对于最近这些现象级的视频作品，用户社区更关注的是Opus 5.5在较少轮次的交互中完成整套视频制作任务的能力。制作一支几分钟的视频，需要持续处理素材和时间轴，画面出现问题，还需要检查、修改、重新渲染。模型既要会编程，也要能理解视觉材料、操作工具，并在长时间工作中保持对整体任务的把握。</p>
+    <p>Anthropic称，相比上一代模型Opus 5，Opus 5.5在多步骤编程、图表和截图理解、电脑操作，以及持续数小时的自主任务上都有改进。官方博客中提到，在一次测试中它无人看管地连续工作了超过18小时。</p>
+    <div class="stats rv">
+      <div class="stat"><b>18<em>小时+</em></b><span>测试中无人看管连续工作</span></div>
+      <div class="stat"><b>−40<em>%</em></b><span>成本，相比 Opus 5</span></div>
+      <div class="stat"><b>≈ Fable 5.1</b><span>多数任务水平</span></div>
+    </div>
+
+    <!-- LAB: benchmarks -->
+    <div class="lab rv" id="benchLab">
+      <div class="lab-head">
+        <span class="lab-title">Opus 5.5 跑分：选一项看看</span>
+        <span class="tag">来源：Anthropic</span>
+      </div>
+      <div class="bench-pick" id="pick" role="tablist"></div>
+      <div class="bench-meta"><b id="bName"></b><span id="bNote"></span></div>
+      <div class="bars" id="bars" style="position:relative"><div class="tip" id="tip"></div></div>
+      <p class="verdict" id="verdict"></p>
+      <details>
+        <summary>查看 Anthropic 发布的原始表格</summary>
+        <img src="img/benchmarks.png" loading="lazy" width="1269" height="999" alt="Anthropic公布的Opus 5.5与Fable 5.1、Opus 5、GPT-6 Astra、GPT-5.6 Sol跑分对比表">
+      </details>
+    </div>
+
+    <p>在成本方面，Opus 5.5也有一定优势。Anthropic称，Opus 5.5在多数任务中水平可以和Fable 5.1齐平，而成本比Opus 5低40%。</p>
+    <p>简单的动画视频制作成本变低了。有用户发帖称，他仅用1分钟、2美元、1句话的prompt，就做出了一段26秒的公司宣传视频，「过去，制作类似的视频需要数周甚至数月，需要与多家机构协调，成本更是现在的1000倍。」</p>
+
+    <!-- LAB: cost -->
+    <div class="lab rv">
+      <div class="lab-head">
+        <span class="lab-title">做一段公司宣传视频</span>
+        <span class="tag">据用户发帖</span>
+      </div>
+      <div class="seg" id="seg"><button data-v="then">过去</button><button class="on" data-v="now">现在 · Opus 5.5</button></div>
+      <div class="cost now" id="cost">
+        <div><small>耗时</small><b data-then="数周甚至数月" data-now="1 分钟">1 分钟</b></div>
+        <div><small>成本</small><b data-then="现在的 1000 倍" data-now="2 美元">2 美元</b></div>
+        <div><small>投入</small><b data-then="与多家机构协调" data-now="1 句话 prompt">1 句话 prompt</b></div>
+        <div><small>产出</small><b data-then="类似的视频" data-now="26 秒宣传视频">26 秒宣传视频</b></div>
+      </div>
+    </div>
+
+    <p>「一句prompt生成整个视频」的易复现的制作方法，让这场热潮更容易传播和延续。有不少创作者公开了视频生成的prompt，还有人把自己做视频的过程打包成了skill。在Github上，已经有这样的skill获得了几千收藏。</p>
+    <p>千万播放的视频让用户直观地感受到，语言模型的编程能力已经能服务于内容创作，它统筹各类工具、持续执行任务的能力，也有机会应用到更多需要规划、协作和反复调整的复杂工作中。</p>
+  </div>
+</section>
+
+<section id="refs">
+  <div class="wrap">
+    <span class="sec-no">REF</span>
+    <h2 style="font-size:22px">参考链接</h2>
+    <ul class="refs">
+      <li><a href="https://www.anthropic.com/claude-opus-5-5" target="_blank" rel="noopener">https://www.anthropic.com/claude-opus-5-5</a></li>
+      <li><a href="https://x.com/anabology/status/2103534482930491441" target="_blank" rel="noopener">https://x.com/anabology/status/2103534482930491441</a></li>
+      <li><a href="https://github.com/yihui-dev/awesome-opus5-5-videos" target="_blank" rel="noopener">https://github.com/yihui-dev/awesome-opus5-5-videos</a></li>
+      <li><a href="https://github.com/JohnHeibel/PDoomVideo" target="_blank" rel="noopener">https://github.com/JohnHeibel/PDoomVideo</a></li>
+    </ul>
+  </div>
+</section>
+
+<footer class="wrap">本页交互模块为原理示意，非原作品代码。</footer>
+
+<script>
+(function(){
+"use strict";
+var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function $(s,r){return (r||document).querySelector(s)}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+function clamp(x){return x<0?0:x>1?1:x}
+function ease(x){x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}
+
+/* ---------- progress bar + nav ---------- */
+var bar=$('#progress'), links=$$('.nav a'), secs=links.map(function(a){return $(a.getAttribute('href'))});
+function onScroll(){
+  var h=document.documentElement, max=h.scrollHeight-h.clientHeight;
+  bar.style.width=(max>0?h.scrollTop/max*100:0)+'%';
+  var cur=-1;
+  secs.forEach(function(s,i){ if(s.getBoundingClientRect().top<120) cur=i; });
+  links.forEach(function(a,i){a.classList.toggle('on',i===cur)});
+}
+addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+/* ---------- reveal + counters ---------- */
+function countUp(el){
+  var to=+el.dataset.to; if(reduce){el.textContent=to;return}
+  var t0=null;
+  function f(ts){ if(!t0)t0=ts; var p=clamp((ts-t0)/1400); el.textContent=Math.round(to*ease(p)); if(p<1)requestAnimationFrame(f); }
+  requestAnimationFrame(f);
+}
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){ e.target.classList.add('in'); $$('.count',e.target).forEach(countUp); if(e.target.classList.contains('count'))countUp(e.target); io.unobserve(e.target);} })},{threshold:.15});
+  $$('.rv').forEach(function(el){io.observe(el)});
+  $$('.hero .count').forEach(function(el){io.observe(el)});
+}else{ $$('.rv').forEach(function(el){el.classList.add('in')}); $$('.count').forEach(function(el){el.textContent=el.dataset.to}); }
+
+/* ---------- carousel dots ---------- */
+var car=$('#car'), dots=$$('#dots button');
+car.addEventListener('scroll',function(){
+  var w=car.scrollWidth-car.clientWidth; var i=w>0?Math.round(car.scrollLeft/w*(dots.length-1)):0;
+  dots.forEach(function(d,k){d.classList.toggle('on',k===i)});
+},{passive:true});
+dots.forEach(function(d,k){d.addEventListener('click',function(){ var g=car.children[k]; car.scrollTo({left:g.offsetLeft-(car.clientWidth-g.clientWidth)/2,behavior:'smooth'}); })});
+
+/* ---------- the demo scene (640x360 logical) ---------- */
+var FPS=30, N=90, WORDS=['什么东西','什么时候','什么位置'];
+function scene(t){
+  return {
+    line: 560*ease(t/1.2),
+    dotX: 40+560*ease((t-.3)/2),
+    title: t>=1.2,
+    words: t<2 ? 0 : Math.min(3, Math.floor((t-2)/.3)+1)
+  };
+}
+function drawScene(ctx,t,W,H,opt){
+  opt=opt||{};
+  var s=scene(t), k=W/640;
+  ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.scale(k,k);
+  ctx.fillStyle='#F5F1E8'; ctx.fillRect(0,0,640,360);
+  if(opt.sketch){
+    ctx.strokeStyle='rgba(30,29,26,.18)'; ctx.setLineDash([6,6]); ctx.lineWidth=1.5;
+    ctx.strokeRect(150,95,340,62); ctx.beginPath(); ctx.moveTo(40,250); ctx.lineTo(600,250); ctx.stroke();
+    ctx.beginPath(); ctx.arc(600,250,12,0,7); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='rgba(30,29,26,.4)'; ctx.font='600 22px '+getComputedStyle(document.body).fontFamily; ctx.textAlign='center';
+    ctx.fillText('标题区',320,131); ctx.fillText('关键词 × 3',320,302);
+    ctx.fillText('线条 →',90,236); ctx.restore(); return;
+  }
+  // baseline ticks
+  ctx.strokeStyle='#1E1D1A'; ctx.lineCap='round'; ctx.lineWidth=3;
+  if(s.line>0){ ctx.beginPath(); ctx.moveTo(40,250); ctx.lineTo(40+s.line,250); ctx.stroke(); }
+  ctx.lineWidth=2;
+  for(var i=0;i<=7;i++){ var x=40+80*i; if(x<=40+s.line+.5){ ctx.beginPath(); ctx.moveTo(x,242); ctx.lineTo(x,258); ctx.stroke(); } }
+  // dot
+  if(t>=.3){ ctx.fillStyle='#C9643F'; ctx.beginPath(); ctx.arc(s.dotX,250,12,0,Math.PI*2); ctx.fill(); }
+  // title pop
+  var ff=getComputedStyle(document.body).fontFamily;
+  if(s.title){
+    var d=t-1.2, sc=1+.28*Math.exp(-d*7)*Math.cos(d*22), a=clamp(d/.12);
+    ctx.save(); ctx.globalAlpha=a; ctx.translate(320,128); ctx.scale(sc,sc);
+    ctx.fillStyle='#1E1D1A'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.font='900 46px '+ff; ctx.fillText('一行代码，一帧画面',0,0); ctx.restore();
+  }
+  // words
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  for(var w=0;w<s.words;w++){
+    var dw=t-(2+.3*w), aw=clamp(dw/.12), yo=10*(1-ease(dw/.2));
+    ctx.globalAlpha=aw; ctx.fillStyle=w===1?'#C9643F':'#4F4B44'; ctx.font='700 22px '+ff;
+    ctx.fillText(WORDS[w],170+150*w,300+yo);
+  }
+  ctx.globalAlpha=1; ctx.restore();
+}
+
+/* ---------- pipeline lab ---------- */
+var cv=$('#cv'), ctx=cv.getContext('2d'), badge=$('#badge'), step=1, playing=null;
+function render(f,label){ drawScene(ctx,f/FPS,cv.width,cv.height); if(label!==undefined)badge.textContent=label; }
+function stopPlay(){ if(playing){cancelAnimationFrame(playing);playing=null;} $('#play2').textContent='▶'; $('#play4').textContent='▶ 播放合成结果'; }
+function showStep(n){
+  stopPlay(); step=n;
+  $$('.steps button').forEach(function(b){b.classList.toggle('on',+b.dataset.step===n)});
+  $$('#lab .panel').forEach(function(p){p.hidden=+p.dataset.panel!==n});
+  if(n===1){ drawScene(ctx,0,cv.width,cv.height,{sketch:true}); badge.textContent='分镜草图'; }
+  if(n===2){ upd2(); }
+  if(n===3){ render(89,'画布 · 待渲染'); }
+  if(n===4){ render(0,'shot01.mp4 · 00:00'); }
+}
+$$('.steps button').forEach(function(b){b.addEventListener('click',function(){showStep(+b.dataset.step)})});
+
+var slider=$('#t');
+function upd2(){
+  var f=+slider.value, t=f/FPS, s=scene(t);
+  render(f,'第 '+(f+1)+' 帧 · t = '+t.toFixed(2)+'s');
+  $('#r-t').textContent=t.toFixed(2); $('#r-f').textContent=f+1;
+  $('#r-l').textContent=Math.round(s.line); $('#r-x').textContent=t>=.3?Math.round(s.dotX):'—';
+  $('#r-v').textContent=s.title; $('#r-w').textContent=s.words;
+  var hot={a:t<1.2, b:t>=.3&&t<2.3, c:t>=1.2&&t<1.7, d:t>=2&&t<2.9};
+  $$('#code [data-l]').forEach(function(l){l.classList.toggle('hot',!!hot[l.dataset.l])});
+}
+slider.addEventListener('input',function(){stopPlay();upd2()});
+function playLoop(onFrame,btn,label){
+  if(playing){stopPlay();return}
+  btn.textContent='❚❚ 暂停'; if(btn.id==='play2')btn.textContent='❚❚';
+  var t0=null, start=onFrame.start||0;
+  function f(ts){ if(t0===null)t0=ts; var fr=(start+Math.floor((ts-t0)/1000*FPS))%N; onFrame(fr); playing=requestAnimationFrame(f); }
+  playing=requestAnimationFrame(f);
+}
+$('#play2').addEventListener('click',function(){
+  var cb=function(fr){slider.value=fr;upd2()}; cb.start=+slider.value; playLoop(cb,this);
+});
+$('#play4').addEventListener('click',function(){
+  playLoop(function(fr){ var t=fr/FPS; render(fr,'shot01.mp4 · 00:0'+Math.floor(t)+'.'+String(Math.floor((t%1)*100)).padStart(2,'0')); $('#r-out').textContent='播放中 · 第 '+(fr+1)+' / 90 帧'; },this);
+});
+$('#render').addEventListener('click',function(){
+  var btn=this, film=$('#film'), fbar=$('#r-bar'), file=$('#r-file'); btn.disabled=true; film.innerHTML='';
+  var f=0, dt=reduce?0:28;
+  (function next(){
+    render(f,'截图中 · frame_'+String(f).padStart(3,'0')+'.png');
+    file.textContent='frame_'+String(f).padStart(3,'0')+'.png'; fbar.style.width=((f+1)/N*100)+'%';
+    if(f%10===0||f===N-1){ var c=document.createElement('canvas'); c.width=192;c.height=108; drawScene(c.getContext('2d'),f/FPS,192,108); film.appendChild(c); film.scrollLeft=film.scrollWidth; }
+    f++;
+    if(f<N) setTimeout(next,dt); else { file.textContent='完成 · 90 张图片'; badge.textContent='渲染完成'; btn.disabled=false; btn.textContent='重新渲染'; }
+  })();
+});
+showStep(1);
+
+/* ---------- diffusion vs code ---------- */
+var cN=$('#cvN'), xN=cN.getContext('2d'), cC=$('#cvC'), xC=cC.getContext('2d');
+var TW=cN.width, TH=cN.height;
+var off=document.createElement('canvas'); off.width=TW; off.height=TH;
+var target, noise, out=xN.createImageData(TW,TH);
+function prepTarget(){
+  drawScene(off.getContext('2d'),2.95,TW,TH);
+  target=off.getContext('2d').getImageData(0,0,TW,TH).data;
+  drawScene(xC,2.95,TW,TH);
+}
+// seeded gaussian noise
+var seed=7; function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647}
+noise=new Float32Array(TW*TH*3);
+for(var i=0;i<noise.length;i++){var u=rnd()||1e-9,v=rnd();noise[i]=Math.sqrt(-2*Math.log(u))*Math.cos(6.2832*v)}
+function drawNoise(step){
+  var a=Math.pow(step/50,1.6), b=Math.sqrt(1-a*a)*70, d=out.data, p=0;
+  for(var j=0;j<TW*TH;j++){
+    for(var c=0;c<3;c++){ var val=a*target[j*4+c]+(1-a)*150+b*noise[p++]; d[j*4+c]=val<0?0:val>255?255:val; }
+    d[j*4+3]=255;
+  }
+  xN.putImageData(out,0,0);
+  $('#nStep').textContent='去噪 '+step+' / 50 步';
+}
+var nz=$('#noise'), dnTimer=null;
+nz.addEventListener('input',function(){ clearInterval(dnTimer); dnTimer=null; drawNoise(+nz.value)});
+$('#denoise').addEventListener('click',function(){
+  clearInterval(dnTimer); var s=0; nz.value=0; drawNoise(0);
+  dnTimer=setInterval(function(){ s++; nz.value=s; drawNoise(s); if(s>=50){clearInterval(dnTimer);dnTimer=null} },reduce?0:60);
+});
+function initCompare(){ prepTarget(); drawNoise(+nz.value); }
+if(document.fonts&&document.fonts.ready){ document.fonts.ready.then(function(){initCompare(); if(step===1)showStep(1)}) } else initCompare();
+initCompare();
+
+/* ---------- crew ---------- */
+var detail=$('#detail');
+$$('.node').forEach(function(n){ n.addEventListener('click',function(){
+  $$('.node').forEach(function(m){m.classList.remove('on')}); n.classList.add('on');
+  detail.innerHTML='<b>'+n.firstChild.textContent.trim()+'</b>：'+n.dataset.d;
+})});
+var pipeBusy=false;
+$('#pipeBtn').addEventListener('click',function(){
+  if(pipeBusy)return; pipeBusy=true; var pns=$$('#pipe .pn'); pns.forEach(function(p){p.classList.remove('lit','dim')});
+  var hl={1:$$('#agents .node')[0],2:$$('#agents .node')[1],3:$$('#agents .node')[2]};
+  var st=1;
+  (function go(){
+    $$('#agents .node').forEach(function(m){m.classList.remove('lit')});
+    if(hl[st])hl[st].classList.add('lit');
+    pns.forEach(function(p){ if(+p.dataset.s===st)p.classList.add('lit'); });
+    if(st===3) pns.forEach(function(p){ if(p.hasAttribute('data-lose')){p.classList.remove('lit');p.classList.add('dim')} });
+    st++;
+    if(st<=4) setTimeout(go,reduce?0:850); else setTimeout(function(){ $$('#agents .node').forEach(function(m){m.classList.remove('lit')}); pipeBusy=false; },reduce?0:900);
+  })();
+});
+
+/* ---------- benchmarks ---------- */
+var MODELS=['Opus 5.5','Fable 5.1','Opus 5','GPT-6 Astra','GPT-5.6 Sol'];
+var B=[
+  {cat:'智能体编程',name:'Terminal-Bench 4.0',v:[66.4,55.8,52.3,57.9,37.3]},
+  {cat:'智能体编程',name:'FrontierCode v1.1 (Main)',v:[54.4,50.3,48.0,53.3,47.5]},
+  {cat:'智能体编程',name:'CursorBench 4.0',v:[57.8,51.8,46.6,null,41.7]},
+  {cat:'知识工作',name:'GDPval-AA v2.1',v:[1846,1735,1708,1542,1588],elo:true},
+  {cat:'业务流程',name:'AutomationBench',v:[40.0,31.4,26.9,41.4,28.8]},
+  {cat:'跨学科推理',name:'Humanity’s Last Exam',v:[67.7,65.6,63.6,57.2,null],note:'with tools'},
+  {cat:'智能体科研',name:'Terminal-Bench-Science 0.1',v:[58.7,52.6,29.0,64.6,22.4]},
+  {cat:'电脑操作',name:'OSWorld 2.1',v:[81.8,80.7,74.0,null,null],note:'partial'},
+  {cat:'图表识别',name:'Chartography',v:[89.0,88.4,83.4,null,null],note:'with tools'}
+];
+var pick=$('#pick'), bars=$('#bars'), tip=$('#tip');
+B.forEach(function(b,i){ var btn=document.createElement('button'); btn.textContent=b.cat+' · '+b.name.replace(/ v?\d.*$/,'').replace(/ \(.*/,''); btn.addEventListener('click',function(){showBench(i)}); pick.appendChild(btn); });
+var rows=MODELS.map(function(m,i){
+  var r=document.createElement('div'); r.className='brow'+(i===0?' me':'');
+  r.innerHTML='<span class="nm">'+m+'</span><div class="track"><div class="fill"></div></div><span class="val"></span>';
+  bars.appendChild(r); return r;
+});
+var cur=0;
+function fmt(b,v){ return v===null?'未公布':(b.elo?String(v):v.toFixed(1)+'%'); }
+function showBench(i){
+  cur=i; var b=B[i];
+  $$('button',pick).forEach(function(x,k){x.classList.toggle('on',k===i); if(k===i)pick.scrollTo({left:x.offsetLeft-(pick.clientWidth-x.offsetWidth)/2,behavior:reduce?'auto':'smooth'})});
+  $('#bName').textContent=b.name; $('#bNote').textContent=b.cat+(b.elo?' · Elo 评分':' · 得分')+(b.note?' · '+b.note:'');
+  var max=b.elo?Math.max.apply(null,b.v)*1.04:100;
+  rows.forEach(function(r,k){ var v=b.v[k]; r.classList.toggle('na',v===null); $('.fill',r).style.width=(v===null?0:v/max*100)+'%'; $('.val',r).textContent=fmt(b,v); });
+  var vals=b.v.filter(function(x){return x!==null}), rank=vals.filter(function(x){return x>b.v[0]}).length+1;
+  var best=b.v.indexOf(Math.max.apply(null,vals));
+  $('#verdict').innerHTML= rank===1
+    ? 'Opus 5.5 在这一项 <b>排名第 1</b>，比上一代 Opus 5 '+(b.elo?'高 '+(b.v[0]-b.v[2])+' 分':'高 '+(b.v[0]-b.v[2]).toFixed(1)+' 个百分点')+'。'
+    : 'Opus 5.5 在这一项排名第 '+rank+'，本项最高为 '+MODELS[best]+'（'+fmt(b,b.v[best])+'）。';
+}
+rows.forEach(function(r,k){
+  function show(e){ var b=B[cur], v=b.v[k]; tip.innerHTML='<b>'+MODELS[k]+'</b> · '+b.name+'<br>'+fmt(b,v)+(v!==null&&b.note?'（'+b.note+'）':'');
+    var br=bars.getBoundingClientRect(), rr=r.getBoundingClientRect();
+    tip.style.left=Math.min(Math.max(0,(e&&e.clientX?e.clientX-br.left:rr.width/2)-60),br.width-200)+'px'; tip.style.top=(rr.top-br.top-46)+'px'; tip.classList.add('show'); }
+  r.addEventListener('mousemove',show); r.addEventListener('click',show);
+  r.addEventListener('mouseleave',function(){tip.classList.remove('show')});
+});
+showBench(0);
+
+/* ---------- cost toggle ---------- */
+$$('#seg button').forEach(function(b){ b.addEventListener('click',function(){
+  $$('#seg button').forEach(function(x){x.classList.toggle('on',x===b)});
+  var v=b.dataset.v, c=$('#cost'); c.classList.toggle('now',v==='now');
+  $$('b',c).forEach(function(el){ el.style.opacity=0; setTimeout(function(){el.textContent=el.dataset[v]; el.style.opacity=1},reduce?0:150); });
+})});
+})();
+</script>
+</body>
+</html>
