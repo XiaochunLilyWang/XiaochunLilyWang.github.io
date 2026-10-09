@@ -171,6 +171,10 @@ const zh = {
     linkText: "阅读全文 →",
     scrollHint: "← 左右滑动查看更多 →",
     mediaHeading: "媒体作品",
+    portfolioLink: {
+      text: "查看全文作品集（中英对照）→",
+      url: "https://xiaochunlilywang.github.io/portfolio/",
+    },
     intro:
       "曾任《第一财经杂志》科技栏目实习记者、复旦大学校级学生媒体《复旦人周报》主编，热爱观察技术、商业与青年文化。以下是部分媒体作品。",
     vibeCoding: {
@@ -409,6 +413,10 @@ const en: typeof zh = {
     linkText: "Read →",
     scrollHint: "← swipe for more →",
     mediaHeading: "Media Work",
+    portfolioLink: {
+      text: "Read the full stories, in English and Chinese →",
+      url: "https://xiaochunlilywang.github.io/portfolio/",
+    },
     intro:
       "Formerly a journalist intern at CBN Weekly and editor-in-chief of Fudan Weekly, I keep writing about technology, business, consumption and youth culture. Selected works below.",
     vibeCoding: {

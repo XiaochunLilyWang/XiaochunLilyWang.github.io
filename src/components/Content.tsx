@@ -58,11 +58,13 @@ function CardRow({
   heading,
   intro,
   hint,
+  link,
   children,
 }: {
   heading: string
   intro: string
   hint: string
+  link?: { text: string; url: string }
   children: React.ReactNode
 }) {
   const trackRef = useRef<HTMLDivElement>(null)
@@ -87,9 +89,20 @@ function CardRow({
           <p className="text-xs text-ink-faint tracking-wider">{hint}</p>
         )}
       </div>
-      <p className="text-sm md:text-base text-ink-soft leading-relaxed mb-6">
+      <p className="text-sm md:text-base text-ink-soft leading-relaxed mb-3">
         {intro}
       </p>
+      {link && (
+        <a
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block text-sm text-accent hover:underline mb-6"
+        >
+          {link.text}
+        </a>
+      )}
+      {!link && <div className="mb-6" />}
       <div
         ref={trackRef}
         role="region"
@@ -125,6 +138,7 @@ export default function Content() {
             heading={content.mediaHeading}
             intro={content.intro}
             hint={content.scrollHint}
+            link={content.portfolioLink}
           >
             {content.list.map((work, i) => (
               <article
