@@ -58,13 +58,11 @@ function CardRow({
   heading,
   intro,
   hint,
-  link,
   children,
 }: {
   heading: string
   intro: string
   hint: string
-  link?: { text: string; url: string }
   children: React.ReactNode
 }) {
   const trackRef = useRef<HTMLDivElement>(null)
@@ -89,20 +87,9 @@ function CardRow({
           <p className="text-xs text-ink-faint tracking-wider">{hint}</p>
         )}
       </div>
-      <p className="text-sm md:text-base text-ink-soft leading-relaxed mb-3">
+      <p className="text-sm md:text-base text-ink-soft leading-relaxed mb-6">
         {intro}
       </p>
-      {link && (
-        <a
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block text-sm text-accent hover:underline mb-6"
-        >
-          {link.text}
-        </a>
-      )}
-      {!link && <div className="mb-6" />}
       <div
         ref={trackRef}
         role="region"
@@ -132,50 +119,27 @@ export default function Content() {
           <h2 className="text-3xl text-ink font-semibold">{content.heading}</h2>
         </div>
 
-        {/* 媒体作品 */}
+        {/* 媒体作品：不列卡片，直接把人送去全文作品集 */}
         <div className="mb-16">
-          <CardRow
-            heading={content.mediaHeading}
-            intro={content.intro}
-            hint={content.scrollHint}
-            link={content.portfolioLink}
+          <h3 className="text-xl text-ink font-semibold mb-4">
+            {content.mediaHeading}
+          </h3>
+          <p className="text-sm md:text-base text-ink-soft leading-relaxed mb-6">
+            {content.intro}
+          </p>
+          <a
+            href={content.portfolioLink.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-3 px-6 py-3.5 rounded-full bg-accent text-paper hover:bg-accent-soft transition-colors"
           >
-            {content.list.map((work, i) => (
-              <article
-                key={i}
-                /* 宽度按轨道可视区计算：手机 1 张（露出下一张边缘），sm 以上正好 2 张 */
-                className="w-[85%] sm:w-[calc((100%-1.5rem)/2)] shrink-0 snap-start bg-surface rounded-2xl overflow-hidden flex flex-col"
-              >
-                <Cover
-                  image={work.image}
-                  imagePosition={
-                    "imagePosition" in work ? work.imagePosition : undefined
-                  }
-                  alt={work.title}
-                  note={content.imageNote}
-                />
-                <div className="p-6 flex flex-col flex-1">
-                  <p className="text-xs text-ink-faint tracking-wider mb-2">
-                    {work.period ? `${work.period} · ${work.source}` : work.source}
-                  </p>
-                  <h4 className="text-base text-ink font-semibold">
-                    {work.title}
-                  </h4>
-                  <p className="text-sm text-ink-soft leading-relaxed mt-2">
-                    {work.description}
-                  </p>
-                  <a
-                    href={work.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block text-sm text-accent mt-auto pt-3 hover:underline"
-                  >
-                    {content.linkText}
-                  </a>
-                </div>
-              </article>
-            ))}
-          </CardRow>
+            <span className="text-sm tracking-wide">
+              {content.portfolioLink.text}
+            </span>
+            <span className="transition-transform group-hover:translate-x-0.5">
+              →
+            </span>
+          </a>
         </div>
 
         {/* Vibe Coding 作品 */}

@@ -172,11 +172,11 @@ const zh = {
     scrollHint: "← 左右滑动查看更多 →",
     mediaHeading: "媒体作品",
     portfolioLink: {
-      text: "查看全文作品集（中英对照）→",
+      text: "查看全文作品集（中英对照）",
       url: "https://xiaochunlilywang.github.io/portfolio/",
     },
     intro:
-      "曾任《第一财经杂志》科技栏目实习记者、复旦大学校级学生媒体《复旦人周报》主编，热爱观察技术、商业与青年文化。以下是部分媒体作品。",
+      "曾任《第一财经杂志》科技栏目实习记者、复旦大学校级学生媒体《复旦人周报》主编，现在晚点 LatePost 做科技报道，热爱观察技术、商业与青年文化。全部报道都在我的作品集里全文收录，中英文各一份。",
     vibeCoding: {
       heading: "Vibe Coding 作品",
       intro:
@@ -423,11 +423,11 @@ const en: typeof zh = {
     scrollHint: "← swipe for more →",
     mediaHeading: "Media Work",
     portfolioLink: {
-      text: "Read the full stories, in English and Chinese →",
+      text: "Read the full stories, in English and Chinese",
       url: "https://xiaochunlilywang.github.io/portfolio/",
     },
     intro:
-      "Formerly a journalist intern at CBN Weekly and editor-in-chief of Fudan Weekly, I keep writing about technology, business, consumption and youth culture. Selected works below.",
+      "Formerly a journalist intern at CBN Weekly and editor-in-chief of Fudan Weekly, now reporting on technology at LatePost, I keep writing about technology, business, consumption and youth culture. Every story is collected in full in my reporting portfolio, in English and in the original Chinese.",
     vibeCoding: {
       heading: "Vibe Coding",
       intro:
