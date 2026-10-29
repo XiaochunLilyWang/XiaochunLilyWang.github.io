@@ -185,8 +185,19 @@ const zh = {
       repoText: "代码仓库 →",
       list: [
         {
+          title: "PULSE · 四键节奏练习器",
+          source: "音游练习器",
+          stats: "小红书小工具 · 2 万+ 次使用 · 5 万+ 浏览",
+          description:
+            "一个四键下落式音游练习器。自己设定 BPM、节奏型和键型，把一小节谱面循环练到稳；也可以逐个音符画出自己的节奏。支持触屏多指和键盘，练习记录存在本地。",
+          playLink: "https://xiaochunlilywang.github.io/pulse-practice/",
+          repoLink: "https://github.com/XiaochunLilyWang/pulse-practice",
+          image: "/images/pulse-practice.png",
+        },
+        {
           title: "云门矿难沉默录",
           source: "叙事游戏",
+          stats: "",
           description:
             "一款调查报道题材的叙事游戏。玩家扮演周刊记者，从一封匿名邮件出发，核对十四个名字，还原一座习惯沉默的矿山。",
           playLink: "https://xiaochunlilywang.github.io/yunmen-game-web/",
@@ -196,6 +207,7 @@ const zh = {
         {
           title: "BOXED",
           source: "音乐节奏游戏",
+          stats: "",
           description:
             "双手追光，把节拍打进盒子。两颗球、两只手、一首歌，追上每一次撞墙，把节拍打成一场几何表演。",
           playLink: "https://xiaochunlilywang.github.io/boxed-rhythm-game/",
@@ -436,8 +448,19 @@ const en: typeof zh = {
       repoText: "Repository →",
       list: [
         {
+          title: "PULSE · Four-Key Rhythm Trainer",
+          source: "Rhythm Trainer",
+          stats: "RED mini-tool · 20,000+ sessions · 50,000+ views",
+          description:
+            "A four-key falling-note rhythm trainer. Set your own BPM, rhythm pattern and key type and loop a single bar until it is steady, or draw your own pattern note by note. Multi-touch and keyboard input; practice history is kept on the device.",
+          playLink: "https://xiaochunlilywang.github.io/pulse-practice/",
+          repoLink: "https://github.com/XiaochunLilyWang/pulse-practice",
+          image: "/images/pulse-practice.png",
+        },
+        {
           title: "The Yunmen Silence",
           source: "Narrative Game",
+          stats: "",
           description:
             "A narrative game about investigative reporting. You play a weekly magazine journalist who starts from an anonymous email, checks fourteen names, and uncovers a mine that has learned to stay silent.",
           playLink: "https://xiaochunlilywang.github.io/yunmen-game-web/",
@@ -447,6 +470,7 @@ const en: typeof zh = {
         {
           title: "BOXED",
           source: "Rhythm Game",
+          stats: "",
           description:
             "Chase the light with both hands and box the beat. Two balls, two hands, one song — catch every bounce off the wall and turn the rhythm into a geometric performance.",
           playLink: "https://xiaochunlilywang.github.io/boxed-rhythm-game/",

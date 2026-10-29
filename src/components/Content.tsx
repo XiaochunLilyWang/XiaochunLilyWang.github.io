@@ -167,6 +167,12 @@ export default function Content() {
                   <h4 className="text-base text-ink font-semibold">
                     {work.title}
                   </h4>
+                  {/* 有真实使用数据的作品，把数字单独提出来 */}
+                  {work.stats && (
+                    <p className="text-xs text-accent tracking-wide mt-1.5">
+                      {work.stats}
+                    </p>
+                  )}
                   <p className="text-sm text-ink-soft leading-relaxed mt-2">
                     {work.description}
                   </p>
